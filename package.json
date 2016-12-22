@@ -1,0 +1,25 @@
+{
+  "name": "ts.events",
+  "version": "1.0.0",
+  "description": "Events module for typescript, inspired by nodejs events.",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+ssh://git@github.com/jaklimoff/ts.events.git"
+  },
+  "keywords": [
+    "events",
+    "nodejs",
+    "typescript",
+    "dispatcher"
+  ],
+  "author": "Jack Klimov",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/jaklimoff/ts.events/issues"
+  },
+  "homepage": "https://github.com/jaklimoff/ts.events#readme"
+}
