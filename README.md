@@ -1,3 +1,5 @@
+[![Build Status](https://travis-ci.org/jaklimoff/ts.events.svg?branch=master)](https://travis-ci.org/jaklimoff/ts.events)
+
 # ts.events
 
 My own modest vision of how should events work. I use this package in my projects and trying my best to keep it updated and optimized.
