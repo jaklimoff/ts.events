@@ -19,8 +19,10 @@ var EventDispatcher = (function () {
             a[_i - 1] = arguments[_i];
         }
         var listeners = this._listeners[event];
-        listeners.forEach(function (item) { return item.listener.apply({}, a || []); });
-        this._listeners[event] = this._listeners[event].filter(function (item) { return !item.once; });
+        if (listeners) {
+            listeners.forEach(function (item) { return item.listener.apply({}, a || []); });
+            this._listeners[event] = this._listeners[event].filter(function (item) { return !item.once; });
+        }
         return this;
     };
     EventDispatcher.prototype.listenerCount = function (event) {

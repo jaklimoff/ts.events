@@ -33,8 +33,10 @@ export class EventDispatcher implements IEventDispatcher {
 
     public emit(event: string, ...a: any[]): EventDispatcher {
         let listeners = this._listeners[event];
-        listeners.forEach(item => item.listener.apply({}, a || []));
-        this._listeners[event] = this._listeners[event].filter(item => !item.once);
+        if (listeners){
+            listeners.forEach(item => item.listener.apply({}, a || []));
+            this._listeners[event] = this._listeners[event].filter(item => !item.once);
+        }
         return this;
     }
 
