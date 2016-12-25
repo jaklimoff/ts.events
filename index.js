@@ -1,8 +1,7 @@
 "use strict";
 var EventDispatcher = (function () {
     function EventDispatcher() {
-        this._listeners = [];
-        this._maxListeners = null;
+        this._listeners = {};
     }
     EventDispatcher.prototype.addListener = function (event, listener) {
         return this.on(event, listener);
@@ -19,66 +18,60 @@ var EventDispatcher = (function () {
         for (var _i = 1; _i < arguments.length; _i++) {
             a[_i - 1] = arguments[_i];
         }
-        var listeners = this._listeners.filter(function (item) { return item.event === event; });
+        var listeners = this._listeners[event];
         listeners.forEach(function (item) { return item.listener.apply({}, a || []); });
-        // TODO: Add ability to use `once` lsitener
-        // this._listeners = listeners.filter(item => !item.once);
-        // return listeners.length !== 0 ? true : false;
-        return true;
-    };
-    EventDispatcher.prototype.getMaxListeners = function () {
-        return this._maxListeners === null ? EventDispatcher.defaultMaxListeners : this._maxListeners;
+        this._listeners[event] = this._listeners[event].filter(function (item) { return !item.once; });
+        return this;
     };
     EventDispatcher.prototype.listenerCount = function (event) {
-        return this._listeners.filter(function (item) { return item.event === event; })
-            .length;
+        return this._listeners[event].length;
     };
     EventDispatcher.prototype.listeners = function (event) {
-        return this._filterMatchingEvents(event)
-            .map(function (item) { return item.listener; })
-            .reverse();
+        return this._listeners[event];
     };
     EventDispatcher.prototype.on = function (event, listener) {
         this._register(event, listener, false);
         return this;
     };
     EventDispatcher.prototype.once = function (event, listener) {
-        this._register(event, listener, false);
+        this._register(event, listener, true);
         return this;
     };
     EventDispatcher.prototype.removeAllListeners = function (event) {
-        this._listeners = this._filterNonMatchingEvents(event);
+        this._listeners[event] = [];
         return this;
     };
     EventDispatcher.prototype.removeListener = function (event, listener) {
-        this._listeners = this._listeners.filter(function (item) {
+        this._listeners[event] = this._listeners[event].filter(function (item) {
             return !((item.event === event) && (item.listener === listener));
         });
         return this;
     };
-    EventDispatcher.prototype.setMaxListeners = function (thresshold) {
-        this._maxListeners = thresshold;
-        return this;
-    };
-    EventDispatcher.prototype._filterMatchingEvents = function (event) {
-        return this._listeners.filter(function (item) { return item.event === event; });
-    };
-    EventDispatcher.prototype._filterNonMatchingEvents = function (event) {
-        return this._listeners.filter(function (item) { return item.event !== event; });
-    };
     EventDispatcher.prototype._register = function (event, listener, once) {
-        !this._checkListenerLimitReached(event) && this._listeners.indexOf(listener) == -1 && this._listeners.unshift({ event: event, listener: listener, once: once });
-        return;
+        var alreadyExist = false;
+        if (this._listeners[event]) {
+            for (var _i = 0, _a = this._listeners[event]; _i < _a.length; _i++) {
+                var iList = _a[_i];
+                if (iList.listener == listener) {
+                    alreadyExist = true;
+                    if (iList.once && !once) {
+                        iList.once = once;
+                    }
+                }
+            }
+        }
+        else {
+            this._listeners[event] = [];
+        }
+        !alreadyExist && this._listeners[event].unshift({ event: event, listener: listener, once: once });
     };
-    EventDispatcher.prototype._returnListenerLimit = function () {
-        return this._maxListeners === null ? EventDispatcher.defaultMaxListeners : this._maxListeners;
+    EventDispatcher.prototype.allListeners = function () {
+        var allList = [];
+        for (var key in this._listeners) {
+            allList = allList.concat(this._listeners[key]);
+        }
+        return allList;
     };
-    EventDispatcher.prototype._checkListenerLimitReached = function (event) {
-        var limitReached = this.listenerCount(event) === this._returnListenerLimit() ? true : false;
-        limitReached && console.log("Listener Limit Reached");
-        return limitReached;
-    };
-    EventDispatcher.defaultMaxListeners = 10;
     return EventDispatcher;
 }());
 exports.EventDispatcher = EventDispatcher;

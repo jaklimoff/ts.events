@@ -1,7 +1,7 @@
 import {EventDispatcher} from "../index";
 
 
-describe("Base actions with dispatcher", function () {
+describe("Base actions with dispatcher:", function () {
     let callbacks: any, ed: EventDispatcher = null;
 
     beforeEach(function() {
@@ -18,11 +18,31 @@ describe("Base actions with dispatcher", function () {
         ed.on('event2', callbacks.onDispatchEvent2);
     });
 
-    it("Check add listener", function () {
-        expect(ed['_listeners'].length).toBe(2);
+    it("add listener", function () {
+        ed.on('event3', callbacks.onDispatchEvent2);
+        expect(ed.allListeners().length).toBe(3);
     });
 
-    it("Check if dispatcher works", function () {
+    it("duplicated listeners", function () {
+        ed.addListener('event1', callbacks.onDispatchEvent1);
+        ed.on('event2', callbacks.onDispatchEvent2);
+
+        ed.once('event3', callbacks.onDispatchEvent2);
+        ed.on('event3', callbacks.onDispatchEvent2);
+
+        expect(ed.allListeners().length).toBe(3);
+        expect(ed.listeners('event3')[0]['once']).toBe(false);
+    });
+
+    it(".once() listener", function () {
+        ed.once('event3', callbacks.onDispatchEvent1);
+        ed.emit('event3');
+
+        expect(callbacks.onDispatchEvent1).toHaveBeenCalled();
+        expect(ed.allListeners().length).toBe(2);
+    });
+
+    it("if dispatcher works", function () {
         ed.emit('event1');
 
         expect(callbacks.onDispatchEvent1).toHaveBeenCalled();
