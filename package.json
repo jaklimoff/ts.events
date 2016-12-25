@@ -1,6 +1,6 @@
 {
   "name": "ts.events",
-  "version": "1.0.1",
+  "version": "1.1.0",
   "description": "Events module for typescript, inspired by nodejs events.",
   "main": "index.js",
   "scripts": {
